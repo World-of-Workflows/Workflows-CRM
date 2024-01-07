@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure AD Callback Handler</title>
+    <script>const clientId = "{{Variables.ClientId}}"; // Replace with your Azure AD client ID
+const tenantId = "{{Variables.TenantId}}"; // Replace with your Azure AD tenant ID
+const redirectUri = "{{Variables.RedirectUrl}}"; // Your redirect URI
+
+// Function to handle the callback from Azure AD
+async function handleAuthCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+        const codeVerifier = localStorage.getItem("codeVerifier"); // Retrieve the verifier
+        console.log(codeVerifier);
+        const tokenRequestData = {
+            client_id: clientId,
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: redirectUri,
+            code_verifier: codeVerifier // Use the retrieved verifier
+        };
+
+        const response = await fetch(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: Object.keys(tokenRequestData).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(tokenRequestData[key])}`).join('&')
+        });
+
+        const responseData = await response.json();
+        if (responseData.access_token) {
+            localStorage.setItem("accessToken", responseData.access_token); // Store access token in local storage
+            if (responseData.refresh_token) {
+                localStorage.setItem("refreshToken", responseData.refresh_token); // Store refresh token in local storage
+            }
+            // Redirect or update UI after successful login
+            window.location.href = "{{Variables.SecurePage}}"; // Redirect to a secure page or home page
+        } else {
+            console.error("Error obtaining tokens", responseData.error);
+        }
+    } else {
+        console.error("No code parameter in URL");
+    }
+}
+
+handleAuthCallback();
+</script> <!-- JavaScript file to handle the callback -->
+</head>
+<body>
+    <h1>Workflows CRM Authenitcation Manager</h1>
+    <p>Processing authentication...</p>
+</body>
+</html>

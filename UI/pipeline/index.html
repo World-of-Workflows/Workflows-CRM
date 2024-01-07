@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funnel Chart with Tailwind</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-center text-3xl font-bold mb-6">Funnel Chart</h1>
+        <div id="funnel-chart" class="flex flex-col items-center space-y-2"></div>
+    </div>
+
+    <script>
+       // Dummy data for the funnel chart
+const funnelData = [
+    { stage: 'Interest', value: 100, color: 'bg-blue-500' },
+    { stage: 'Consideration', value: 75, color: 'bg-green-500' },
+    { stage: 'Intent', value: 50, color: 'bg-yellow-500' },
+    { stage: 'Purchase', value: $2,2500, color: 'bg-red-500' }
+];
+
+// Function to generate the funnel chart
+function generateFunnelChart() {
+    const funnelChartContainer = document.getElementById('funnel-chart');
+    funnelChartContainer.innerHTML = ''; // Clear existing content
+
+    const totalValue = funnelData.reduce((acc, item) => acc + item.value, 0);
+
+    funnelData.forEach((item) => {
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'flex justify-center';
+
+        const div = document.createElement('div');
+        div.className = `${item.color} text-white text-center py-2`;
+        div.style.maxWidth='100%';
+        div.style.width = `100%`;
+        // div.style.width = `${(item.value / 100) * 100}%`;
+        // div.style.height = `${(item.value / totalValue) * 10}%`;
+        div.textContent = `${item.stage}: ${item.value}`;
+        
+        wrapperDiv.appendChild(div);
+        funnelChartContainer.appendChild(wrapperDiv);
+    });
+}
+
+// Generate the chart on load
+generateFunnelChart();
+
+    </script>
+</body>
+</html>
